@@ -28,18 +28,13 @@ export const Arrows = () => {
       }}
     >
       {arrowsList.map((arrow, i) => {
-        const [arrowStartField, arrowEndField, arrowColor] = arrow;
-        if (arrowStartField === arrowEndField) return null;
+        if (arrow.from === arrow.to) return null;
         const from = getRelativeCoords(
           boardOrientation,
           boardWidth,
-          arrowStartField
+          arrow.from
         );
-        const to = getRelativeCoords(
-          boardOrientation,
-          boardWidth,
-          arrowEndField
-        );
+        const to = getRelativeCoords(boardOrientation, boardWidth, arrow.to);
         let ARROW_LENGTH_REDUCER = boardWidth / 32;
 
         const isArrowActive = i === arrows.length;
@@ -47,7 +42,7 @@ export const Arrows = () => {
         if (
           arrows.some(
             (restArrow) =>
-              restArrow[0] !== arrowStartField && restArrow[1] === arrowEndField
+              restArrow.from !== arrow.from && restArrow.to === arrow.to
           ) &&
           !isArrowActive
         ) {
@@ -65,7 +60,7 @@ export const Arrows = () => {
 
         return (
           <Fragment
-            key={`${arrowStartField}-${arrowEndField}${
+            key={`${JSON.stringify(arrow)}-${i}${
               isArrowActive ? "-active" : ""
             }`}
           >
@@ -79,7 +74,7 @@ export const Arrows = () => {
             >
               <polygon
                 points="0.3 0, 2 1.25, 0.3 2.5"
-                fill={arrowColor ?? primaryArrowCollor}
+                fill={arrow.color ?? primaryArrowCollor}
               />
             </marker>
             <line
@@ -87,13 +82,28 @@ export const Arrows = () => {
               y1={from.y}
               x2={end.x}
               y2={end.y}
-              opacity={isArrowActive ? "0.5" : "0.65"}
-              stroke={arrowColor ?? primaryArrowCollor}
+              opacity={arrow.opacity ?? (isArrowActive ? "0.5" : "0.65")}
+              stroke={arrow.color ?? primaryArrowCollor}
               strokeWidth={
-                isArrowActive ? (0.9 * boardWidth) / 40 : boardWidth / 40
+                arrow.width ??
+                (isArrowActive ? (0.9 * boardWidth) / 40 : boardWidth / 40)
               }
               markerEnd={`url(#arrowhead-${i})`}
             />
+            {arrow.text ? (
+              <text
+                x={(from.x + end.x) / 2}
+                y={(from.y + end.y) / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={arrow.textColor ?? "black"}
+                fontSize={arrow.fontSize}
+                fontWeight={arrow.fontWeight}
+                fontFamily={arrow.fontFamily}
+              >
+                {arrow.text}
+              </text>
+            ) : null}
           </Fragment>
         );
       })}

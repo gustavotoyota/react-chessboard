@@ -23,7 +23,7 @@ export const useArrows = (
     if (Array.isArray(customArrows)) {
       setCustomArrows(
         //filter out arrows which starts and ends in the same square
-        customArrows?.filter((arrow) => arrow[0] !== arrow[1])
+        customArrows?.filter((arrow) => arrow.from !== arrow.to)
       );
     }
   }, [customArrows]);
@@ -42,7 +42,7 @@ export const useArrows = (
   const drawNewArrow = (fromSquare: Square, toSquare: Square) => {
     if (!areArrowsAllowed) return;
 
-    setNewArrow([fromSquare, toSquare, customArrowColor]);
+    setNewArrow({ from: fromSquare, to: toSquare, color: customArrowColor });
   };
 
   const allBoardArrows = [...arrows, ...customArrowsSet];
@@ -51,10 +51,14 @@ export const useArrows = (
     if (fromSquare === toSquare) return;
 
     let arrowsCopy;
-    const newArrow: Arrow = [fromSquare, toSquare, customArrowColor];
+    const newArrow: Arrow = {
+      from: fromSquare,
+      to: toSquare,
+      color: customArrowColor,
+    };
 
-    const isNewArrowUnique = allBoardArrows.every(([arrowFrom, arrowTo]) => {
-      return !(arrowFrom === fromSquare && arrowTo === toSquare);
+    const isNewArrowUnique = allBoardArrows.every((arrow) => {
+      return !(arrow.from === fromSquare && arrow.to === toSquare);
     });
 
     // add the newArrow to arrows array if it is unique
@@ -63,8 +67,8 @@ export const useArrows = (
     }
     // remove it from the board if we already have same arrow in arrows array
     else {
-      arrowsCopy = arrows.filter(([arrowFrom, arrowTo]) => {
-        return !(arrowFrom === fromSquare && arrowTo === toSquare);
+      arrowsCopy = arrows.filter((arrow) => {
+        return !(arrow.from === fromSquare && arrow.to === toSquare);
       });
     }
 

@@ -130,7 +130,20 @@ export type DropOffBoardAction = "snapback" | "trash";
 
 export type Coords = { x: number; y: number };
 
-export type Arrow = [Square, Square, string?];
+export type Arrow = {
+  from: Square;
+  to: Square;
+
+  color?: string;
+  width?: string | number;
+  opacity?: string | number;
+
+  text?: string;
+  textColor?: string;
+  fontSize?: string | number;
+  fontWeight?: string | number;
+  fontFamily?: string;
+};
 
 export type ChessboardProps = {
   /**
