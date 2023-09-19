@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Square, Arrow } from "../types";
+import { Square, Arrow, MarkerColors } from "../types";
 
 type Arrows = Arrow[];
 
 export const useArrows = (
+  customArrowColors: MarkerColors,
+  customHighlightColors: MarkerColors,
   customArrows?: Arrows,
   areArrowsAllowed: boolean = true,
-  onArrowsChange?: (arrows: Arrows) => void,
-  customArrowColor?: string
+  onArrowsChange?: (arrows: Arrows) => void
 ) => {
   // arrows passed programatically to `ChessBoard` as a react prop
   const [customArrowsSet, setCustomArrows] = useState<Arrows>([]);
@@ -42,23 +43,52 @@ export const useArrows = (
   const drawNewArrow = (fromSquare: Square, toSquare: Square) => {
     if (!areArrowsAllowed) return;
 
-    setNewArrow({ from: fromSquare, to: toSquare, color: customArrowColor });
+    setNewArrow({ from: fromSquare, to: toSquare });
   };
 
   const allBoardArrows = [...arrows, ...customArrowsSet];
 
-  const onArrowDrawEnd = (fromSquare: Square, toSquare: Square) => {
-    if (fromSquare === toSquare) return;
+  const onArrowDrawEnd = (
+    fromSquare: Square,
+    toSquare: Square,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    let arrowColor: string;
+
+    if (fromSquare === toSquare) {
+      arrowColor = customHighlightColors.default;
+
+      if (event.ctrlKey && customHighlightColors.ctrl) {
+        arrowColor = customHighlightColors.ctrl;
+      } else if (event.shiftKey && customHighlightColors.shift) {
+        arrowColor = customHighlightColors.shift;
+      } else if (event.altKey && customHighlightColors.alt) {
+        arrowColor = customHighlightColors.alt;
+      }
+    } else {
+      arrowColor = customArrowColors.default;
+
+      if (event.ctrlKey && customArrowColors.ctrl) {
+        arrowColor = customArrowColors.ctrl;
+      } else if (event.shiftKey && customArrowColors.shift) {
+        arrowColor = customArrowColors.shift;
+      } else if (event.altKey && customArrowColors.alt) {
+        arrowColor = customArrowColors.alt;
+      }
+    }
 
     let arrowsCopy;
+
     const newArrow: Arrow = {
       from: fromSquare,
       to: toSquare,
-      color: customArrowColor,
+      color: arrowColor,
     };
 
+    const newArrowJSON = JSON.stringify(newArrow);
+
     const isNewArrowUnique = allBoardArrows.every((arrow) => {
-      return !(arrow.from === fromSquare && arrow.to === toSquare);
+      return newArrowJSON !== JSON.stringify(arrow);
     });
 
     // add the newArrow to arrows array if it is unique
@@ -68,7 +98,7 @@ export const useArrows = (
     // remove it from the board if we already have same arrow in arrows array
     else {
       arrowsCopy = arrows.filter((arrow) => {
-        return !(arrow.from === fromSquare && arrow.to === toSquare);
+        return newArrowJSON !== JSON.stringify(arrow);
       });
     }
 

@@ -144,7 +144,7 @@ export function Square({
       onMouseUp={(e) => {
         if (e.button === 2) {
           if (currentRightClickDown)
-            onArrowDrawEnd(currentRightClickDown, square);
+            onArrowDrawEnd(currentRightClickDown, square, e);
           onRightClickUp(square);
         }
       }}

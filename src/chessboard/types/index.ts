@@ -126,6 +126,13 @@ export type CustomSquareStyles = {
 
 export type BoardOrientation = "white" | "black";
 
+export type MarkerColors = {
+  default: string;
+  ctrl?: string;
+  shift?: string;
+  alt?: string;
+};
+
 export type DropOffBoardAction = "snapback" | "trash";
 
 export type Coords = { x: number; y: number };
@@ -191,7 +198,8 @@ export type ChessboardProps = {
    * String with rgb or hex value to colour drawn arrows.
    * @default rgb(255,170,0)
    */
-  customArrowColor?: string;
+  customArrowColors?: MarkerColors;
+  customHighlightColors?: MarkerColors;
   /**
    * Custom board style object e.g. { borderRadius: '5px', boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5 '}.
    * @default {}

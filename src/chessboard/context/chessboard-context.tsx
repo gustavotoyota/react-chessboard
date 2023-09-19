@@ -46,7 +46,8 @@ interface ChessboardProviderContext {
   arePremovesAllowed: RequiredChessboardProps["arePremovesAllowed"];
   boardOrientation: RequiredChessboardProps["boardOrientation"];
   boardWidth: RequiredChessboardProps["boardWidth"];
-  customArrowColor: RequiredChessboardProps["customArrowColor"];
+  customArrowColors: RequiredChessboardProps["customArrowColors"];
+  customHighlightColors: RequiredChessboardProps["customHighlightColors"];
   customBoardStyle: ChessboardProps["customBoardStyle"];
   customDarkSquareStyle: RequiredChessboardProps["customDarkSquareStyle"];
   customDropSquareStyle: RequiredChessboardProps["customDropSquareStyle"];
@@ -97,7 +98,11 @@ interface ChessboardProviderContext {
   setShowPromoteDialog: React.Dispatch<React.SetStateAction<boolean>>;
   showPromoteDialog: boolean;
   newArrow?: Arrow;
-  onArrowDrawEnd: (from: Square, to: Square) => void;
+  onArrowDrawEnd: (
+    from: Square,
+    to: Square,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => void;
   drawNewArrow: (from: Square, to: Square) => void;
   currentRightClickDown?: Square;
 }
@@ -118,7 +123,8 @@ export const ChessboardProvider = forwardRef(
       children,
       clearPremovesOnRightClick = true,
       customArrows,
-      customArrowColor = "rgb(255,170,0)",
+      customArrowColors = { default: "rgb(255,170,0)" },
+      customHighlightColors = { default: "rgb(255,170,0)" },
       customBoardStyle,
       customDarkSquareStyle = { backgroundColor: "#B58863" },
       customDropSquareStyle = {
@@ -306,10 +312,11 @@ export const ChessboardProvider = forwardRef(
 
     const { arrows, newArrow, clearArrows, drawNewArrow, onArrowDrawEnd } =
       useArrows(
+        customArrowColors,
+        customHighlightColors,
         customArrows,
         areArrowsAllowed,
-        onArrowsChange,
-        customArrowColor
+        onArrowsChange
       );
 
     // handle drop position change
@@ -448,7 +455,8 @@ export const ChessboardProvider = forwardRef(
       arePremovesAllowed,
       boardOrientation,
       boardWidth,
-      customArrowColor,
+      customArrowColors,
+      customHighlightColors,
       customBoardStyle,
       customDarkSquareStyle,
       customDropSquareStyle,

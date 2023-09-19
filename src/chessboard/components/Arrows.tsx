@@ -11,7 +11,7 @@ export const Arrows = () => {
     boardOrientation,
     boardWidth,
 
-    customArrowColor: primaryArrowCollor,
+    customArrowColors,
   } = useChessboard();
   const arrowsList = [...arrows, newArrow].filter(Boolean) as Arrow[];
 
@@ -28,16 +28,33 @@ export const Arrows = () => {
       }}
     >
       {arrowsList.map((arrow, i) => {
-        if (arrow.from === arrow.to) return null;
         const from = getRelativeCoords(
           boardOrientation,
           boardWidth,
           arrow.from
         );
+
+        const isArrowActive = i === arrows.length;
+
+        if (arrow.from === arrow.to) {
+          return (
+            <rect
+              key={`${JSON.stringify(arrow)}-${i}${
+                isArrowActive ? "-active" : ""
+              }`}
+              x={from.x - boardWidth / 16}
+              y={from.y - boardWidth / 16}
+              width={boardWidth / 8}
+              height={boardWidth / 8}
+              fill={arrow.color ?? customArrowColors.default}
+              opacity={arrow.opacity ?? (isArrowActive ? "0.5" : "0.65")}
+            />
+          );
+        }
+
         const to = getRelativeCoords(boardOrientation, boardWidth, arrow.to);
         let ARROW_LENGTH_REDUCER = boardWidth / 32;
 
-        const isArrowActive = i === arrows.length;
         // if there are different arrows targeting the same square make their length a bit shorter
         if (
           arrows.some(
@@ -74,7 +91,7 @@ export const Arrows = () => {
             >
               <polygon
                 points="0.3 0, 2 1.25, 0.3 2.5"
-                fill={arrow.color ?? primaryArrowCollor}
+                fill={arrow.color ?? customArrowColors.default}
               />
             </marker>
             <line
@@ -83,7 +100,7 @@ export const Arrows = () => {
               x2={end.x}
               y2={end.y}
               opacity={arrow.opacity ?? (isArrowActive ? "0.5" : "0.65")}
-              stroke={arrow.color ?? primaryArrowCollor}
+              stroke={arrow.color ?? customArrowColors.default}
               strokeWidth={
                 arrow.width ??
                 (isArrowActive ? (0.9 * boardWidth) / 40 : boardWidth / 40)
