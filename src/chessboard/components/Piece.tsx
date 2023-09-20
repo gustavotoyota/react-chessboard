@@ -33,6 +33,7 @@ export function Piece({
     onPieceDragEnd,
     positionDifferences,
     premoves,
+    boardOrientation,
   } = useChessboard();
 
   const [pieceStyle, setPieceStyle] = useState({
@@ -122,11 +123,18 @@ export function Piece({
       const targetSq = newSquare[0];
       if (sourceSq && targetSq) {
         const squareWidth = boardWidth / 8;
+        const multiplier = boardOrientation === "white" ? 1 : -1;
         setPieceStyle((oldPieceStyle) => ({
           ...oldPieceStyle,
           transform: `translate(${
-            (targetSq.charCodeAt(0) - sourceSq.charCodeAt(0)) * squareWidth
-          }px, ${(Number(sourceSq[1]) - Number(targetSq[1])) * squareWidth}px)`,
+            (targetSq.charCodeAt(0) - sourceSq.charCodeAt(0)) *
+            squareWidth *
+            multiplier
+          }px, ${
+            (Number(sourceSq[1]) - Number(targetSq[1])) *
+            squareWidth *
+            multiplier
+          }px)`,
           transition: `transform ${animationDuration}ms`,
           zIndex: 6,
         }));
